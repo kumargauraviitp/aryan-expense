@@ -1,0 +1,125 @@
+/* ==============================================================================
+   FinTrack Dual-Theme Tokens (Dark Default & Light Mode Specification)
+   ============================================================================== */
+
+:root {
+  color-scheme: dark;
+  /* High-Craft Technical Palette (Engineered Dark Theme) */
+  --bg-app: #09090b;
+  --bg-surface: #101014;
+  --bg-surface-elevated: #16161a;
+  --bg-card: #121216;
+  --bg-card-hover: #18181e;
+  --bg-input: #0c0c0f;
+  
+  /* Precision Hairline Borders */
+  --border-subtle: #1f1f24;
+  --border-medium: #27272d;
+  --border-strong: #3f3f46;
+  --border-focus: #71717a;
+
+  /* Primary Brand & Actions (Monochrome Tactile & Neutral) */
+  --btn-primary-bg: #f4f4f5;
+  --btn-primary-text: #09090b;
+  --btn-primary-hover: #ffffff;
+  --btn-secondary-bg: #18181b;
+  --btn-secondary-text: #e4e4e7;
+  --btn-secondary-hover: #222226;
+
+  /* Data Signal Colors */
+  --income: #22c55e;
+  --income-dim: rgba(34, 197, 94, 0.1);
+  --income-border: rgba(34, 197, 94, 0.25);
+  
+  --expense: #f43f5e;
+  --expense-dim: rgba(244, 63, 94, 0.1);
+  --expense-border: rgba(244, 63, 94, 0.25);
+
+  --warning: #f59e0b;
+  --warning-dim: rgba(245, 158, 11, 0.1);
+  
+  --info: #38bdf8;
+  --info-dim: rgba(56, 189, 248, 0.1);
+
+  /* Typography */
+  --font-sans: 'Geist', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-mono: 'Geist Mono', 'SF Mono', Consolas, monospace;
+
+  --text-primary: #f4f4f5;
+  --text-secondary: #a1a1aa;
+  --text-muted: #71717a;
+  --text-dim: #52525b;
+
+  /* Depth & Radii */
+  --radius-xs: 4px;
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
+  --radius-xl: 18px;
+  --radius-full: 9999px;
+
+  /* Tactile Shadows */
+  --shadow-subtle: 0 1px 2px rgba(0, 0, 0, 0.4);
+  --shadow-card: 0 4px 20px -2px rgba(0, 0, 0, 0.5), 0 0 0 1px var(--border-subtle);
+  --shadow-modal: 0 20px 50px -10px rgba(0, 0, 0, 0.8), 0 0 0 1px var(--border-medium);
+
+  /* Transitions */
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --duration-fast: 0.12s;
+  --duration-normal: 0.2s;
+
+  /* Dot Grid Pattern */
+  --dot-color: rgba(255, 255, 255, 0.04);
+  --spotlight-glow: rgba(34, 197, 94, 0.05);
+}
+
+/* ==============================================================================
+   LIGHT MODE: Studio White & Paper-Craft Precision Theme
+   ============================================================================== */
+[data-theme="light"] {
+  color-scheme: light;
+  --bg-app: #f8fafc;
+  --bg-surface: #ffffff;
+  --bg-surface-elevated: #f1f5f9;
+  --bg-card: #ffffff;
+  --bg-card-hover: #f8fafc;
+  --bg-input: #ffffff;
+  
+  --border-subtle: #e2e8f0;
+  --border-medium: #cbd5e1;
+  --border-strong: #94a3b8;
+  --border-focus: #0f172a;
+
+  --btn-primary-bg: #0f172a;
+  --btn-primary-text: #ffffff;
+  --btn-primary-hover: #1e293b;
+  --btn-secondary-bg: #f8fafc;
+  --btn-secondary-text: #0f172a;
+  --btn-secondary-hover: #f1f5f9;
+
+  --income: #16a34a;
+  --income-dim: rgba(22, 163, 74, 0.08);
+  --income-border: rgba(22, 163, 74, 0.25);
+  
+  --expense: #e11d48;
+  --expense-dim: rgba(225, 29, 72, 0.08);
+  --expense-border: rgba(225, 29, 72, 0.25);
+
+  --warning: #d97706;
+  --warning-dim: rgba(217, 119, 6, 0.08);
+  
+  --info: #0284c7;
+  --info-dim: rgba(2, 132, 199, 0.08);
+
+  --text-primary: #0f172a;
+  --text-secondary: #334155;
+  --text-muted: #64748b;
+  --text-dim: #94a3b8;
+
+  --shadow-subtle: 0 1px 2px rgba(0, 0, 0, 0.05);
+  --shadow-card: 0 1px 3px 0 rgba(0, 0, 0, 0.05), 0 1px 2px -1px rgba(0, 0, 0, 0.04), 0 0 0 1px var(--border-subtle);
+  --shadow-modal: 0 20px 45px -10px rgba(0, 0, 0, 0.16), 0 0 0 1px var(--border-medium);
+
+  --dot-color: rgba(0, 0, 0, 0.04);
+  --spotlight-glow: rgba(22, 163, 74, 0.06);
+}

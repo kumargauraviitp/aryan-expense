@@ -1,0 +1,22 @@
+{
+  "name": "fintrack-expense-tracker",
+  "version": "1.0.0",
+  "description": "Smart, modern personal expense tracker & financial dashboard with authentication, budgets, goals, and analytics.",
+  "scripts": {
+    "dev": "npx serve .",
+    "build": "node scripts/build-env.js",
+    "seed": "node scripts/seed-supabase.js",
+    "start": "npx serve ."
+  },
+  "keywords": [
+    "expense-tracker",
+    "finance",
+    "budget",
+    "dashboard",
+    "html",
+    "css",
+    "javascript"
+  ],
+  "author": "Aryan",
+  "license": "MIT"
+}

@@ -1,0 +1,964 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="FinTrack - Technical personal finance ledger and capital management system for engineers and professionals.">
+  <meta name="theme-color" id="meta-theme-color" content="#09090b">
+  <title>FinTrack • Financial Ledger & Workspace</title>
+
+  <!-- Google Fonts: Geist Sans & Geist Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&family=Geist+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+  <!-- Chart.js CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+
+  <!-- Supabase JS Client CDN (Official v2) -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <!-- Optional Production Runtime Environment Config (generated at build time by Vercel) -->
+  <script src="env-config.js" onerror="/* Optional in local dev - falls back to fetching .env.local */"></script>
+
+  <!-- Technical Style Engine -->
+  <link rel="stylesheet" href="css/variables.css">
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/auth.css">
+  <link rel="stylesheet" href="css/dashboard.css">
+  <link rel="stylesheet" href="css/components.css">
+</head>
+<body>
+
+  <!-- ========================================================================= -->
+  <!-- 1. AUTHENTICATION VIEW (Interactive Particle Canvas & Telemetry Stage)     -->
+  <!-- ========================================================================= -->
+  <section id="auth-view" class="auth-view">
+    
+    <!-- Top Controls: Theme Switcher -->
+    <div class="auth-top-controls">
+      <button type="button" class="theme-toggle-btn" aria-label="Toggle color theme" title="Toggle theme (Press T)">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+      </button>
+    </div>
+
+    <!-- Interactive Background Canvas Animation -->
+    <canvas id="auth-canvas" class="auth-canvas"></canvas>
+
+    <div class="auth-stage">
+      
+      <!-- Floating Telemetry Chips (Desktop Display) -->
+      <div class="floating-telemetry-left">
+        <div class="floating-tel-icon" style="color: var(--income);">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
+        </div>
+        <div class="floating-tel-text">
+          <span class="floating-tel-title">+₹85,000.00</span>
+          <span class="floating-tel-sub">ACH Direct Wire Settled</span>
+        </div>
+      </div>
+
+      <div class="floating-telemetry-right">
+        <div class="floating-tel-icon" style="color: var(--info);">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+        </div>
+        <div class="floating-tel-text">
+          <span class="floating-tel-title">Local Persistence</span>
+          <span class="floating-tel-sub">Sub-ms Query Latency</span>
+        </div>
+      </div>
+
+      <!-- Main Login Card -->
+      <div class="auth-card">
+        <div style="text-align: center;">
+          <div class="system-status-pill" id="auth-status-pill">
+            <span class="pulse-indicator"></span>
+            <span id="auth-status-text">SUPABASE AUTH • TLS 1.3 ENCRYPTED</span>
+          </div>
+        </div>
+
+        <div class="auth-brand">
+          <div class="auth-brand-logo">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+          </div>
+          <h1>FinTrack Ledger</h1>
+          <p>Personal finance telemetry and capital allocation</p>
+        </div>
+
+        <!-- Quick Demo Workspace Banner -->
+        <div class="demo-access-card">
+          <div class="demo-access-meta">
+            <strong>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+              Demo Sandbox
+            </strong>
+            <span>Pre-seeded with 90-day ledger history</span>
+          </div>
+          <button type="button" class="btn-demo-quick" id="btn-demo-login">Launch Demo</button>
+        </div>
+
+        <!-- Segmented Tabs: Sign In / Create Account -->
+        <div class="auth-segmented">
+          <button type="button" class="auth-tab-btn active" data-tab="login">Sign In</button>
+          <button type="button" class="auth-tab-btn" data-tab="register">New Account</button>
+        </div>
+
+        <!-- Sign In Form -->
+        <div id="login-panel">
+          <form id="login-form">
+            <div class="form-group">
+              <label for="login-email" class="form-label">Email identifier</label>
+              <input type="email" id="login-email" class="form-control" placeholder="developer@workspace.io" required autocomplete="email">
+            </div>
+
+            <div class="form-group">
+              <label for="login-password" class="form-label">Password</label>
+              <div class="input-password-wrapper">
+                <input type="password" id="login-password" class="form-control" placeholder="••••••••" required autocomplete="current-password">
+                <button type="button" class="btn-toggle-password" data-target="login-password" title="Show password" aria-label="Toggle password visibility">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
+                </button>
+              </div>
+              <div style="display: flex; justify-content: flex-end; margin-top: 0.35rem;">
+                <button type="button" id="btn-forgot-password" class="auth-helper-link">Forgot password?</button>
+              </div>
+            </div>
+
+            <button type="submit" id="btn-login-submit" class="btn btn-primary" style="width: 100%; margin-top: 0.5rem;">
+              <span class="btn-text">Authenticate with Supabase</span>
+            </button>
+          </form>
+        </div>
+
+        <!-- Register Form -->
+        <div id="register-panel" class="hidden">
+          <form id="register-form">
+            <div class="form-group">
+              <label for="reg-name" class="form-label">Account Name</label>
+              <input type="text" id="reg-name" class="form-control" placeholder="Aryan Sharma" required>
+            </div>
+
+            <div class="form-group">
+              <label for="reg-email" class="form-label">Email identifier</label>
+              <input type="email" id="reg-email" class="form-control" placeholder="aryan@domain.com" required autocomplete="email">
+            </div>
+
+            <div class="form-group">
+              <label for="reg-password" class="form-label">Password (Min. 6 chars)</label>
+              <div class="input-password-wrapper">
+                <input type="password" id="reg-password" class="form-control" placeholder="••••••••" required minlength="6" autocomplete="new-password">
+                <button type="button" class="btn-toggle-password" data-target="reg-password" title="Show password" aria-label="Toggle password visibility">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
+                </button>
+              </div>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem;">
+              <div class="form-group">
+                <label for="reg-currency" class="form-label">Currency</label>
+                <select id="reg-currency" class="form-control">
+                  <option value="INR" selected>INR (₹)</option>
+                  <option value="USD">USD ($)</option>
+                  <option value="EUR">EUR (€)</option>
+                  <option value="GBP">GBP (£)</option>
+                  <option value="AED">AED</option>
+                  <option value="CAD">CAD ($)</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label for="reg-balance" class="form-label">Opening Funds</label>
+                <input type="number" id="reg-balance" class="form-control" placeholder="0" min="0" step="any">
+              </div>
+            </div>
+
+            <button type="submit" id="btn-register-submit" class="btn btn-primary" style="width: 100%; margin-top: 0.5rem;">
+              <span class="btn-text">Create Supabase Account</span>
+            </button>
+          </form>
+        </div>
+
+        <!-- Dynamic Verification / Info Notice -->
+        <div id="auth-notice-card" class="auth-notice-card hidden">
+          <div class="auth-notice-icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
+          </div>
+          <div class="auth-notice-content">
+            <h3 id="notice-title">Confirm Your Email</h3>
+            <p id="notice-desc">We've sent a verification link to your email. Please activate your account before logging in.</p>
+            <div class="auth-notice-tip">
+              <strong>Admin Tip:</strong> To allow immediate sign-in without email verification, visit Supabase Dashboard &rarr; <em>Authentication</em> &rarr; <em>Providers</em> &rarr; <em>Email</em>, and disable <strong>"Confirm email"</strong>.
+            </div>
+            <button type="button" class="btn btn-secondary btn-sm" id="btn-notice-switch-login" style="margin-top: 0.65rem;">Switch to Sign In</button>
+          </div>
+        </div>
+
+        <div class="auth-footer">
+          <span id="auth-footer-text">SECURED VIA SUPABASE AUTH • SERVER-SIDE BCRYPT • ROW-LEVEL SECURITY</span>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ========================================================================= -->
+  <!-- 2. DASHBOARD VIEW (Full Application Once Authenticated)                   -->
+  <!-- ========================================================================= -->
+  <div id="dashboard-view" class="app-layout hidden">
+    
+    <div id="sidebar-backdrop" class="sidebar-backdrop"></div>
+
+    <!-- App Sidebar -->
+    <aside id="app-sidebar" class="app-sidebar">
+      <div class="sidebar-brand">
+        <div class="sidebar-logo">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+        </div>
+        <h1>FinTrack</h1>
+        <span class="brand-tag">v2.4</span>
+      </div>
+
+      <!-- Navigation Links -->
+      <ul class="sidebar-nav">
+        <li>
+          <a class="nav-item-link active" data-tab="dashboard" href="#dashboard">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect width="7" height="9" x="3" y="3" rx="1"/><rect width="7" height="5" x="14" y="3" rx="1"/><rect width="7" height="9" x="14" y="12" rx="1"/><rect width="7" height="5" x="3" y="16" rx="1"/></svg>
+            <span>Overview</span>
+          </a>
+        </li>
+        <li>
+          <a class="nav-item-link" data-tab="transactions" href="#transactions">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M21 12V7H5a2 2 0 0 1 0-4h14v4"/><path d="M3 5v14a2 2 0 0 0 2 2h16v-5"/><path d="M18 12a2 2 0 0 0 0 4h4v-4Z"/></svg>
+            <span>Ledger</span>
+          </a>
+        </li>
+        <li>
+          <a class="nav-item-link" data-tab="budgets" href="#budgets">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"/><path d="m4.93 4.93 4.24 4.24"/><path d="m14.83 9.17 4.24-4.24"/><path d="m14.83 14.83 4.24 4.24"/><path d="m9.17 14.83-4.24 4.24"/></svg>
+            <span>Thresholds & Goals</span>
+          </a>
+        </li>
+        <li>
+          <a class="nav-item-link" data-tab="analytics" href="#analytics">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M3 3v18h18"/><path d="m19 9-5 5-4-4-3 3"/></svg>
+            <span>Telemetry</span>
+          </a>
+        </li>
+        <li>
+          <a class="nav-item-link" data-tab="settings" href="#settings">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+            <span>Preferences</span>
+          </a>
+        </li>
+      </ul>
+
+      <!-- User Metadata Footer -->
+      <div class="sidebar-user">
+        <div class="user-meta">
+          <div class="user-avatar" id="user-avatar-badge">A</div>
+          <div class="user-details">
+            <div class="user-name" id="user-display-name">Aryan Sharma</div>
+            <div class="user-email" id="user-display-email">aryan@workspace.dev</div>
+          </div>
+        </div>
+        <button class="btn-action-icon delete" id="btn-logout" title="Terminate Session">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+        </button>
+      </div>
+    </aside>
+
+    <!-- Main Content Stage -->
+    <div class="app-main">
+      
+      <!-- Topbar Navigation -->
+      <header class="topbar">
+        <div class="topbar-left">
+          <button class="menu-toggle-btn" id="btn-menu-toggle" aria-label="Toggle navigation">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+          </button>
+          <div class="topbar-greeting">
+            <h2 id="topbar-greeting-text">Aryan Sharma [WORKSPACE]</h2>
+            <p id="topbar-current-date">● LIVE TELEMETRY</p>
+          </div>
+        </div>
+
+        <div class="topbar-right">
+          <!-- Theme Switcher Button -->
+          <button type="button" class="theme-toggle-btn" aria-label="Toggle color theme" title="Toggle theme (Press T)">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+          </button>
+
+          <!-- Record Entry Modal Trigger -->
+          <button type="button" class="btn btn-primary btn-open-tx-modal" id="btn-topbar-add-tx">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            <span>Record Entry</span>
+            <kbd>⌘K</kbd>
+          </button>
+        </div>
+      </header>
+
+      <!-- TAB 1: OVERVIEW DASHBOARD -->
+      <main id="page-dashboard" class="page-container app-tab-page">
+        
+        <!-- Technical Metric Cards -->
+        <section class="kpi-grid">
+          
+          <div class="kpi-card">
+            <div class="kpi-header">
+              <span class="kpi-title">Net Capital Reserve</span>
+              <div class="kpi-icon-wrap">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="20" height="14" x="2" y="5" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
+              </div>
+            </div>
+            <div class="kpi-value" id="kpi-balance-val">₹0.00</div>
+            <div class="kpi-footer">
+              <span class="trend-pill trend-up">Liquid</span>
+              <span>Across tracked accounts</span>
+            </div>
+          </div>
+
+          <div class="kpi-card kpi-card-income">
+            <div class="kpi-header">
+              <span class="kpi-title">Monthly Inflows</span>
+              <div class="kpi-icon-wrap" style="color: var(--income);">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
+              </div>
+            </div>
+            <div class="kpi-value" id="kpi-income-val">+₹0.00</div>
+            <div class="kpi-footer">
+              <span>Current billing cycle</span>
+            </div>
+          </div>
+
+          <div class="kpi-card kpi-card-expense">
+            <div class="kpi-header">
+              <span class="kpi-title">Monthly Outflows</span>
+              <div class="kpi-icon-wrap" style="color: var(--expense);">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 18 13.5 8.5 8.5 13.5 1 6"/><polyline points="17 18 23 18 23 12"/></svg>
+              </div>
+            </div>
+            <div class="kpi-value" id="kpi-expense-val">-₹0.00</div>
+            <div class="kpi-footer">
+              <span class="trend-pill" id="kpi-expense-trend">MoM</span>
+            </div>
+          </div>
+
+          <div class="kpi-card">
+            <div class="kpi-header">
+              <span class="kpi-title">Capital Retention</span>
+              <div class="kpi-icon-wrap">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg>
+              </div>
+            </div>
+            <div class="kpi-value" id="kpi-savings-val">0.0%</div>
+            <div class="kpi-footer">
+              <span id="kpi-savings-desc">0 delta</span>
+            </div>
+          </div>
+
+        </section>
+
+        <!-- Charts Grid -->
+        <section class="charts-grid">
+          
+          <div class="glass-panel chart-card">
+            <div class="chart-header">
+              <div>
+                <h3>Cash Flow Trajectory</h3>
+                <p style="font-size: 0.74rem; font-family: var(--font-mono);">Inflows vs Outflows (6-cycle window)</p>
+              </div>
+            </div>
+            <div class="chart-canvas-container">
+              <canvas id="cashflowBarChart"></canvas>
+            </div>
+          </div>
+
+          <div class="glass-panel chart-card">
+            <div class="chart-header">
+              <div>
+                <h3>Capital Allocation</h3>
+                <p style="font-size: 0.74rem; font-family: var(--font-mono);">Outflow distribution by sector</p>
+              </div>
+            </div>
+            <div class="chart-canvas-container">
+              <canvas id="categoryDoughnutChart"></canvas>
+            </div>
+          </div>
+
+        </section>
+
+        <!-- Bottom Grid: Recent Ledger & Budgets Snapshot -->
+        <section class="dashboard-bottom-grid">
+          
+          <div class="glass-panel content-card">
+            <div class="content-card-header">
+              <div>
+                <h3>Recent Ledger Activity</h3>
+                <p style="font-size: 0.74rem; font-family: var(--font-mono);">Latest settled transactions</p>
+              </div>
+              <button class="btn btn-secondary btn-sm" onclick="document.querySelector('[data-tab=\'transactions\']').click()">
+                Full Ledger →
+              </button>
+            </div>
+
+            <div class="table-responsive">
+              <table class="transactions-table">
+                <thead>
+                  <tr>
+                    <th>Entry Description</th>
+                    <th>Category</th>
+                    <th style="text-align: right;">Amount</th>
+                  </tr>
+                </thead>
+                <tbody id="recent-transactions-tbody">
+                  <!-- Injected via JavaScript -->
+                </tbody>
+              </table>
+
+              <div id="recent-transactions-empty" class="empty-state hidden">
+                <div class="empty-state-icon">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+                </div>
+                <h4>Ledger Empty</h4>
+                <p>Record your first inflow or outflow entry using the action button above.</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Budget Snapshot -->
+          <div class="glass-panel content-card">
+            <div class="content-card-header">
+              <div>
+                <h3>Operational Thresholds</h3>
+                <p style="font-size: 0.74rem; font-family: var(--font-mono);">Monthly category spending caps</p>
+              </div>
+              <button class="btn btn-secondary btn-sm" id="btn-quick-create-budget">
+                + Threshold
+              </button>
+            </div>
+
+            <div id="dashboard-budgets-list" class="budget-list">
+              <!-- Injected via JavaScript -->
+            </div>
+          </div>
+
+        </section>
+
+      </main>
+
+      <!-- TAB 2: FULL TRANSACTIONS LEDGER -->
+      <main id="page-transactions" class="page-container app-tab-page hidden">
+        <div class="glass-panel content-card">
+          
+          <div class="content-card-header">
+            <div>
+              <h3>Ledger Journal</h3>
+              <p style="font-size: 0.76rem; font-family: var(--font-mono);">Comprehensive auditable transaction logs</p>
+            </div>
+            <div style="display: flex; gap: 0.65rem; align-items: center;">
+              <span id="tx-results-count" class="badge badge-neutral">0 entries</span>
+              <button type="button" class="btn btn-primary btn-sm btn-open-tx-modal">
+                + Record Entry
+              </button>
+            </div>
+          </div>
+
+          <!-- Filter Toolbar -->
+          <div class="filter-bar">
+            
+            <div class="search-input-wrap">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+              <input type="text" id="filter-search" class="form-control" placeholder="Search by merchant, identifier, or notes...">
+            </div>
+
+            <select id="filter-type" class="form-control" style="width: auto; min-width: 120px;">
+              <option value="all">All Types</option>
+              <option value="expense">Outflow Only</option>
+              <option value="income">Inflow Only</option>
+            </select>
+
+            <select id="filter-category" class="form-control" style="width: auto; min-width: 160px;">
+              <option value="all">All Categories</option>
+            </select>
+
+            <select id="filter-period" class="form-control" style="width: auto; min-width: 140px;">
+              <option value="this_month" selected>Current Month</option>
+              <option value="last_month">Previous Month</option>
+              <option value="last_30_days">Trailing 30 Days</option>
+              <option value="this_year">Current Year</option>
+              <option value="all">Full History</option>
+            </select>
+
+            <select id="filter-sort" class="form-control" style="width: auto; min-width: 140px;">
+              <option value="date_desc" selected>Newest First</option>
+              <option value="date_asc">Oldest First</option>
+              <option value="amount_desc">Highest Amount</option>
+              <option value="amount_asc">Lowest Amount</option>
+            </select>
+
+          </div>
+
+          <!-- Table -->
+          <div class="table-responsive">
+            <table class="transactions-table">
+              <thead>
+                <tr>
+                  <th>Description / Identifier</th>
+                  <th>Sector</th>
+                  <th>Settlement Date</th>
+                  <th>Routing Method</th>
+                  <th style="text-align: right;">Amount</th>
+                  <th style="text-align: right;">Actions</th>
+                </tr>
+              </thead>
+              <tbody id="all-transactions-tbody">
+                <!-- Injected via JavaScript -->
+              </tbody>
+            </table>
+
+            <div id="all-transactions-empty" class="empty-state hidden">
+              <div class="empty-state-icon">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+              </div>
+              <h4>No Matching Records</h4>
+              <p>No transaction rows match your active filter parameters.</p>
+            </div>
+          </div>
+
+        </div>
+      </main>
+
+      <!-- TAB 3: THRESHOLDS & GOALS -->
+      <main id="page-budgets" class="page-container app-tab-page hidden">
+        
+        <div style="margin-bottom: 2.5rem;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+            <div>
+              <h3>Sector Spending Thresholds</h3>
+              <p style="font-size: 0.76rem; font-family: var(--font-mono);">Hard monthly caps by operational category</p>
+            </div>
+            <button class="btn btn-primary btn-sm" id="btn-header-add-budget">+ Set Threshold</button>
+          </div>
+
+          <div id="full-budgets-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1rem;">
+            <!-- Populated via JS -->
+          </div>
+        </div>
+
+        <div>
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+            <div>
+              <h3>Capital Reserve Targets</h3>
+              <p style="font-size: 0.76rem; font-family: var(--font-mono);">Hardware upgrades, tax buffers, and reserve milestones</p>
+            </div>
+            <button class="btn btn-primary btn-sm" id="btn-header-add-goal">+ Define Goal</button>
+          </div>
+
+          <div id="full-goals-grid" class="goals-grid">
+            <!-- Populated via JS -->
+          </div>
+        </div>
+
+      </main>
+
+      <!-- TAB 4: TELEMETRY & ANALYTICS -->
+      <main id="page-analytics" class="page-container app-tab-page hidden">
+        
+        <div class="analytics-stats-grid">
+          <div class="stat-box">
+            <div class="stat-box-title">Cumulative Outflows</div>
+            <div class="stat-box-val" id="analytics-total-spent">₹0.00</div>
+            <div class="stat-box-desc">Total lifetime logged expenses</div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-box-title">Mean Ticket Value</div>
+            <div class="stat-box-val" id="analytics-avg-tx">₹0.00</div>
+            <div class="stat-box-desc">Per-transaction expense mean</div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-box-title">Primary Outflow Sector</div>
+            <div class="stat-box-val" id="analytics-top-cat">Loading...</div>
+            <div class="stat-box-desc">Highest capital allocation</div>
+          </div>
+        </div>
+
+        <div class="charts-grid">
+          <div class="glass-panel chart-card">
+            <div class="chart-header">
+              <h3>Inflow vs Outflow Ledger</h3>
+            </div>
+            <div class="chart-canvas-container" style="min-height: 290px;">
+              <canvas id="analyticsCashflowChart"></canvas>
+            </div>
+          </div>
+
+          <div class="glass-panel chart-card">
+            <div class="chart-header">
+              <h3>Sector Breakdown Analysis</h3>
+            </div>
+            <div class="chart-canvas-container" style="min-height: 290px;">
+              <canvas id="analyticsCategoryChart"></canvas>
+            </div>
+          </div>
+        </div>
+
+      </main>
+
+      <!-- TAB 5: PREFERENCES & DATA PORTABILITY -->
+      <main id="page-settings" class="page-container app-tab-page hidden">
+        
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(380px, 1fr)); gap: 1.25rem;">
+          
+          <div class="glass-panel" style="padding: 1.5rem;">
+            <h3 style="margin-bottom: 0.25rem; font-size: 0.95rem;">Profile & Locale Preferences</h3>
+            <p style="font-size: 0.76rem; font-family: var(--font-mono); margin-bottom: 1.25rem;">Global formatting, theme tokens, and identity</p>
+
+            <form id="profile-form">
+              <div class="form-group">
+                <label for="settings-name" class="form-label">Operator Display Name</label>
+                <input type="text" id="settings-name" class="form-control" required>
+              </div>
+
+              <div class="form-group">
+                <label for="settings-currency" class="form-label">Base Currency Standard</label>
+                <select id="settings-currency" class="form-control">
+                  <option value="INR">INR (₹) - Indian Rupee</option>
+                  <option value="USD">USD ($) - US Dollar</option>
+                  <option value="EUR">EUR (€) - Euro</option>
+                  <option value="GBP">GBP (£) - British Pound</option>
+                  <option value="AED">AED - UAE Dirham</option>
+                  <option value="CAD">CAD (CA$) - Canadian Dollar</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label for="settings-theme" class="form-label">Interface Appearance Theme (Press T to toggle)</label>
+                <select id="settings-theme" class="form-control">
+                  <option value="dark">Dark Theme (Terminal Zinc)</option>
+                  <option value="light">Light Theme (Studio Slate Paper)</option>
+                </select>
+              </div>
+
+              <button type="submit" class="btn btn-secondary btn-sm" style="margin-top: 0.5rem;">Commit Changes</button>
+            </form>
+          </div>
+
+          <div class="glass-panel" style="padding: 1.5rem;">
+            <h3 style="margin-bottom: 0.25rem; font-size: 0.95rem;">Data Export & Migration</h3>
+            <p style="font-size: 0.76rem; font-family: var(--font-mono); margin-bottom: 1.25rem;">Direct JSON & CSV serialization pipelines</p>
+
+            <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+              <div style="display: flex; gap: 0.65rem;">
+                <button type="button" class="btn btn-secondary btn-sm" id="btn-export-csv" style="flex: 1;">
+                  Export CSV
+                </button>
+                <button type="button" class="btn btn-secondary btn-sm" id="btn-export-json" style="flex: 1;">
+                  Export JSON Ledger
+                </button>
+              </div>
+
+              <div style="border-top: 1px solid var(--border-subtle); padding-top: 0.75rem;">
+                <input type="file" id="import-json-input" accept=".json" class="hidden">
+                <button type="button" class="btn btn-outline btn-sm" id="btn-import-json" style="width: 100%;">
+                  Restore from JSON Backup
+                </button>
+              </div>
+
+              <div style="border-top: 1px solid var(--border-subtle); padding-top: 0.75rem;">
+                <button type="button" class="btn btn-danger btn-sm" id="btn-reset-user-data" style="width: 100%;">
+                  Purge All Ledger Entries
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Card 3: Supabase Cloud Database Sync -->
+          <div class="glass-panel" style="padding: 1.5rem;">
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.25rem;">
+              <h3 style="font-size: 0.95rem;">Supabase Cloud Database</h3>
+              <span id="supabase-status-badge" class="badge" style="background: var(--bg-surface-elevated); color: var(--text-muted); border: 1px solid var(--border-medium);">
+                Local Storage Mode
+              </span>
+            </div>
+            <p style="font-size: 0.76rem; font-family: var(--font-mono); margin-bottom: 1.25rem;">Direct PostgreSQL synchronization & cloud persistence</p>
+
+            <form id="supabase-config-form">
+              <div class="form-group">
+                <label for="supabase-url" class="form-label">Supabase Project URL</label>
+                <input type="url" id="supabase-url" class="form-control" style="font-family: var(--font-mono);" placeholder="https://your-project.supabase.co" autocomplete="off">
+              </div>
+
+              <div class="form-group">
+                <label for="supabase-anon-key" class="form-label">Supabase Anon Key (Public)</label>
+                <input type="password" id="supabase-anon-key" class="form-control" style="font-family: var(--font-mono);" placeholder="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..." autocomplete="off">
+              </div>
+
+              <div style="display: flex; gap: 0.5rem; margin-top: 1rem; flex-wrap: wrap;">
+                <button type="submit" class="btn btn-primary btn-sm" id="btn-save-supabase">
+                  Save Credentials
+                </button>
+                <button type="button" class="btn btn-secondary btn-sm" id="btn-test-supabase">
+                  Test Connection
+                </button>
+                <button type="button" class="btn btn-secondary btn-sm" id="btn-sync-to-cloud">
+                  Push Local Data to Cloud
+                </button>
+                <button type="button" class="btn btn-outline btn-sm" id="btn-clear-supabase" style="color: var(--expense);">
+                  Disconnect
+                </button>
+              </div>
+            </form>
+          </div>
+
+        </div>
+
+      </main>
+
+    </div>
+  </div>
+
+  <!-- ========================================================================= -->
+  <!-- 3. MODAL DIALOGS (Native HTML5 <dialog> Elements)                         -->
+  <!-- ========================================================================= -->
+  
+  <!-- Add / Edit Transaction Modal -->
+  <dialog id="transaction-modal" class="modal-dialog" closedby="any">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 id="tx-modal-title">Record Ledger Entry</h3>
+        <button type="button" class="modal-close-btn btn-close-modal" aria-label="Close dialog">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+
+      <form id="transaction-form">
+        <div class="modal-body">
+          
+          <!-- Segmented Toggle -->
+          <div class="type-toggle-group">
+            <button type="button" class="type-toggle-btn active expense" id="type-toggle-expense">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="23 18 13.5 8.5 8.5 13.5 1 6"/></svg>
+              <span>Outflow (Expense)</span>
+            </button>
+            <button type="button" class="type-toggle-btn" id="type-toggle-income">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/></svg>
+              <span>Inflow (Income)</span>
+            </button>
+          </div>
+
+          <!-- Amount -->
+          <div class="form-group">
+            <label for="tx-amount" class="form-label">Figure Amount</label>
+            <div style="position: relative;">
+              <span id="tx-currency-prefix" style="position: absolute; left: 0.85rem; top: 50%; transform: translateY(-50%); font-weight: 600; color: var(--text-muted); font-family: var(--font-mono);">₹</span>
+              <input type="number" id="tx-amount" class="form-control" style="padding-left: 2.1rem; font-size: 1.15rem; font-family: var(--font-mono); font-weight: 600;" placeholder="0.00" step="any" min="0.01" required>
+            </div>
+          </div>
+
+          <!-- Description -->
+          <div class="form-group">
+            <label for="tx-title" class="form-label">Merchant / Description</label>
+            <input type="text" id="tx-title" class="form-control" placeholder="e.g. AWS Cloud Tier, Retainer Payout, Lease" required>
+          </div>
+
+          <!-- Category Grid Picker (Clean Vector Icons) -->
+          <div class="form-group">
+            <label class="form-label">Sector Category</label>
+            <div id="category-picker-grid" class="category-picker-grid">
+              <!-- Injected by JavaScript -->
+            </div>
+          </div>
+
+          <!-- Date & Payment Method -->
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem;">
+            <div class="form-group">
+              <label for="tx-date" class="form-label">Settlement Date</label>
+              <input type="date" id="tx-date" class="form-control" required>
+            </div>
+
+            <div class="form-group">
+              <label for="tx-payment-method" class="form-label">Routing Method</label>
+              <select id="tx-payment-method" class="form-control">
+                <option value="UPI">UPI / Instant Pay</option>
+                <option value="Credit Card">Corporate Credit Card</option>
+                <option value="Debit Card">Debit Card</option>
+                <option value="Bank Transfer">Wire / ACH Transfer</option>
+                <option value="Cash">Cash Liquidity</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Notes & Recurring -->
+          <div class="form-group">
+            <label for="tx-notes" class="form-label">Internal Memo / Notes</label>
+            <input type="text" id="tx-notes" class="form-control" placeholder="Invoice reference, contract milestone...">
+          </div>
+
+          <div style="display: flex; align-items: center; gap: 0.5rem; margin-top: 0.25rem;">
+            <input type="checkbox" id="tx-recurring" style="width: 15px; height: 15px; accent-color: var(--text-primary);">
+            <label for="tx-recurring" style="font-size: 0.78rem; color: var(--text-muted); cursor: pointer;">
+              Recurring commitment (Automated monthly cadence)
+            </label>
+          </div>
+
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-outline btn-sm btn-close-modal">Cancel</button>
+          <button type="submit" class="btn btn-primary btn-sm" id="btn-save-transaction">Commit Entry</button>
+        </div>
+      </form>
+    </div>
+  </dialog>
+
+  <!-- Budget Modal -->
+  <dialog id="budget-modal" class="modal-dialog" closedby="any">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>Configure Sector Threshold</h3>
+        <button type="button" class="modal-close-btn btn-close-modal" aria-label="Close dialog">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+
+      <form id="budget-form">
+        <div class="modal-body">
+          <div class="form-group">
+            <label for="budget-category" class="form-label">Sector</label>
+            <select id="budget-category" class="form-control" required></select>
+          </div>
+
+          <div class="form-group">
+            <label for="budget-amount" class="form-label">Monthly Ceiling Cap</label>
+            <div style="position: relative;">
+              <span id="budget-currency-prefix" style="position: absolute; left: 0.85rem; top: 50%; transform: translateY(-50%); font-weight: 600; color: var(--text-muted); font-family: var(--font-mono);">₹</span>
+              <input type="number" id="budget-amount" class="form-control" style="padding-left: 2.1rem; font-family: var(--font-mono);" placeholder="15000" min="1" step="any" required>
+            </div>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-outline btn-sm btn-close-modal">Cancel</button>
+          <button type="submit" class="btn btn-primary btn-sm">Set Threshold</button>
+        </div>
+      </form>
+    </div>
+  </dialog>
+
+  <!-- Goal Modal -->
+  <dialog id="goal-modal" class="modal-dialog" closedby="any">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>Define Capital Goal</h3>
+        <button type="button" class="modal-close-btn btn-close-modal" aria-label="Close dialog">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+
+      <form id="goal-form">
+        <div class="modal-body">
+          <div class="form-group">
+            <label for="goal-title" class="form-label">Goal Title</label>
+            <input type="text" id="goal-title" class="form-control" placeholder="e.g. Infrastructure Upgrade, 6-Month Reserve" required>
+          </div>
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem;">
+            <div class="form-group">
+              <label for="goal-target" class="form-label">Target Capital</label>
+              <div style="position: relative;">
+                <span id="goal-currency-prefix" style="position: absolute; left: 0.85rem; top: 50%; transform: translateY(-50%); font-weight: 600; color: var(--text-muted); font-family: var(--font-mono);">₹</span>
+                <input type="number" id="goal-target" class="form-control" style="padding-left: 2.1rem; font-family: var(--font-mono);" placeholder="100000" min="1" step="any" required>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="goal-current" class="form-label">Currently Allocated</label>
+              <input type="number" id="goal-current" class="form-control" style="font-family: var(--font-mono);" placeholder="0" min="0" step="any">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="goal-deadline" class="form-label">Target Completion Date</label>
+            <input type="date" id="goal-deadline" class="form-control">
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-outline btn-sm btn-close-modal">Cancel</button>
+          <button type="submit" class="btn btn-primary btn-sm">Track Goal</button>
+        </div>
+      </form>
+    </div>
+  </dialog>
+
+  <!-- Add Funds Modal -->
+  <dialog id="add-funds-modal" class="modal-dialog" closedby="any">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>Allocate Capital</h3>
+        <button type="button" class="modal-close-btn btn-close-modal" aria-label="Close dialog">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+
+      <form id="add-funds-form">
+        <input type="hidden" id="add-funds-goal-id">
+        <div class="modal-body">
+          <div class="form-group">
+            <label for="add-funds-amount" class="form-label">Capital Allocation Amount</label>
+            <div style="position: relative;">
+              <span id="add-funds-prefix" style="position: absolute; left: 0.85rem; top: 50%; transform: translateY(-50%); font-weight: 600; color: var(--text-muted); font-family: var(--font-mono);">₹</span>
+              <input type="number" id="add-funds-amount" class="form-control" style="padding-left: 2.1rem; font-size: 1.15rem; font-family: var(--font-mono); font-weight: 600;" placeholder="5000" min="1" step="any" required>
+            </div>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-outline btn-sm btn-close-modal">Cancel</button>
+          <button type="submit" class="btn btn-primary btn-sm">Confirm Allocation</button>
+        </div>
+      </form>
+    </div>
+  </dialog>
+
+  <!-- 4. FORGOT PASSWORD MODAL (Native HTML5 <dialog>) -->
+  <dialog id="forgot-password-modal" class="modal-dialog" closedby="any">
+    <div class="modal-content" style="max-width: 440px;">
+      <div class="modal-header">
+        <div class="modal-title-wrap">
+          <h2 class="modal-title">Reset Supabase Password</h2>
+          <p class="modal-subtitle">Supabase will send a secure password reset link to your registered email</p>
+        </div>
+        <button type="button" class="btn-close-modal" id="btn-close-forgot-modal" aria-label="Close">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+
+      <form id="forgot-password-form">
+        <div class="modal-body">
+          <div class="form-group">
+            <label for="forgot-email" class="form-label">Registered Email</label>
+            <input type="email" id="forgot-email" class="form-control" placeholder="user@workspace.dev" required autocomplete="email">
+          </div>
+          <div style="margin-top: 0.75rem; font-size: 0.78rem; line-height: 1.45; background: var(--bg-surface-elevated); border: 1px solid var(--border-medium); padding: 0.75rem; border-radius: var(--radius-xs); color: var(--text-secondary);">
+            A cryptographically signed, single-use recovery token will be dispatched directly to your inbox by Supabase Auth.
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-outline btn-sm btn-close-modal" id="btn-cancel-forgot-modal">Cancel</button>
+          <button type="submit" class="btn btn-primary btn-sm" id="btn-submit-forgot">
+            <span class="btn-text">Send Recovery Link</span>
+          </button>
+        </div>
+      </form>
+    </div>
+  </dialog>
+
+  <!-- Toast Container -->
+  <div id="toast-container" class="toast-container"></div>
+
+  <!-- Application Entry -->
+  <script type="module" src="js/app.js"></script>
+</body>
+</html>

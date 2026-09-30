@@ -1,0 +1,53 @@
+# ==============================================================================
+# Vercel Deployment Ignore Rules (.vercelignore)
+# Excludes development artifacts, IDE configs, credentials & local logs from builds
+# ==============================================================================
+
+# Git & Version Control
+.git/
+.gitignore
+
+# Environment variables & private credentials
+.env
+.env.local
+.env.*.local
+*.pem
+*.key
+*.cert
+
+# Vercel build & deployment caches
+.vercel/
+
+# Package dependencies & logs
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+*.log
+logs/
+
+# IDE & Editor metadata
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+*.swp
+*.swo
+*~
+
+# Operating System files
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+Thumbs.db
+Desktop.ini
+
+# Testing, documentation drafts & scratch assets
+coverage/
+.nyc_output/
+*.md
+!README.md
+scratch/
+tests/
